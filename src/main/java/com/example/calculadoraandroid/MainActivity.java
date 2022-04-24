@@ -23,14 +23,15 @@ import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener{
 
+
     private Button button1,button2,button3,button4,button5,button6,button7,button8,button9,
             button0,buttonIgual,buttonCe,buttonDivide,buttonMult,buttonSoma,buttonSubtrai;
     private Float val1;
     private Float val2;
-    private String lastClick;
+    private Character lastOperator;
     private Character operador;
     private TextView visor;
-    private boolean limpa = false;
+    private boolean isFirst = true;
 
     protected void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
@@ -83,51 +84,49 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         val1 = null;
         val2 = null;
         operador = null;
-        lastClick = null;
         visor.setText("");
-        limpa = false;
+        lastOperator = null;
+        isFirst = true;
     }
 
     protected void executeSum(){
-        if(lastClick != null && val2 != null){
+        if(val2 != null){
             val1 = val1 + val2;
             val2 = null;
             visor.setText(""+val1);
         }else {
-            lastClick = "" + operador;
+            val2 = val1;
         }
     }
 
     protected void executeSub(){
-        if(lastClick != null && val2 != null){
+        System.out.println(val1+" "+val2+" "+lastOperator+" "+operador);
+        if(val2 != null){
             val1 = val1 - val2;
             val2 = null;
             visor.setText(""+val1);
         }else {
-            lastClick = "" + operador;
+            val2 = val1;
         }
     }
 
     protected void executeMult(){
-        if(lastClick != null && val2 != null){
+        if(val2 != null){
             val1 = val1 * val2;
             val2 = null;
             visor.setText(""+val1);
         }else {
-            lastClick = "" + operador;
+            val2 = val1;
         }
     }
 
     protected void executeDiv(){
-        if(lastClick != null && val2 != null){
-            if(val2 == 0){
-                limpa = true;
-            }
+        if(val2 != null){
             val1 = val1 / val2;
             val2 = null;
             visor.setText(""+val1);
         }else {
-            lastClick = "" + operador;
+            val2 = val1;
         }
     }
 
@@ -135,39 +134,54 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         if(operador == '='){
             operador = null;
         }
-        switch (lastClick){
-            case "+":
-                executeSum();
-                break;
-            case "-":
-                executeSub();
-                break;
-            case "*":
-                executeMult();
-                break;
-            case "/":
-                executeDiv();
-                break;
+        if(lastOperator != null){
+            isFirst = false;
+            System.out.println(val1+" "+val2+" "+lastOperator+" "+operador);
+            switch (lastOperator){
+                case '+':
+                    executeSum();
+                    break;
+                case '-':
+                    executeSub();
+                    break;
+                case '*':
+                    executeMult();
+                    break;
+                case '/':
+                    executeDiv();
+                    break;
+            }
+        }else{
+            visor.setText("");
         }
+        lastOperator = operador;
+
     }
 
 
     protected void concat(int valor){
-        Float.parseFloat(visor + "" + valor  );
+        if(!isFirst){
+            visor.setText("");
+            isFirst = false;
+        }
+        visor.append(String.valueOf(valor));
+        if(lastOperator == null){
+            val1 = Float.parseFloat(visor.getText().toString());
+        }else{
+            val2 = Float.parseFloat(visor.getText().toString());
+        }
     }
 
 
     @Override
     public void onClick(View view) {
-        if(limpa == true){
-            resetAll();
-        }
         switch (view.getId()){
             case R.id.button0:
                 concat(0 );
                 break;
             case R.id.button:
                 concat(1 );
+                break;
             case R.id.button2:
                 concat(2 );
                 break;
